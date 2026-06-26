@@ -36,17 +36,26 @@ public class CoronaManager {
         ConfigurationSection coronas = plugin.getConfig().getConfigurationSection("coronas");
         if (coronas == null) return;
 
+        Player jugadorOnline = Bukkit.getOnlinePlayers().stream().findFirst().orElse(null);
+        if (jugadorOnline == null) return;
+
         for (String board : coronas.getKeys(false)) {
-            String placeholder = "%ajlb_lb_" + board + "_1_alltime_name%";
-            Player jugadorOnline = Bukkit.getOnlinePlayers().stream().findFirst().orElse(null);
-            String nuevoLider;
-            if (jugadorOnline != null) {
-                nuevoLider = PlaceholderAPI.setPlaceholders(jugadorOnline, placeholder);
+            // Si tiene placeholder-custom, usarlo; si no, construir el de ajlb
+            String placeholder;
+            String customPlaceholder = coronas.getString(board + ".placeholder-custom");
+            if (customPlaceholder != null && !customPlaceholder.isEmpty()) {
+                placeholder = customPlaceholder;
             } else {
-                continue;
+                placeholder = "%ajlb_lb_" + board + "_1_alltime_name%";
             }
 
-            if (nuevoLider == null || nuevoLider.isEmpty() || nuevoLider.equals(placeholder)) continue;
+            String nuevoLider = PlaceholderAPI.setPlaceholders(jugadorOnline, placeholder);
+
+            if (nuevoLider == null || nuevoLider.isEmpty()
+                    || nuevoLider.equals(placeholder)
+                    || nuevoLider.equalsIgnoreCase("loading")
+                    || nuevoLider.equalsIgnoreCase("Board does not exist")
+                    || nuevoLider.equalsIgnoreCase("---")) continue;
 
             String liderAnterior = lideresActuales.get(board);
 
@@ -80,7 +89,7 @@ public class CoronaManager {
             .replace("%anterior%", anterior)
             .replace("%corona%", color + emoji + " " + nombreCorona + "&r");
 
-        mensaje = mensaje.replace("&", "§").replaceAll("&#([0-9A-Fa-f]{6})", "");
+        mensaje = mensaje.replace("&", "§");
 
         for (String linea : mensaje.split("\n")) {
             Bukkit.broadcastMessage(linea);
