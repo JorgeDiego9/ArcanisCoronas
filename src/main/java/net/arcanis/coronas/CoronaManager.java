@@ -53,4 +53,109 @@ public class CoronaManager {
             if (!nuevoLider.equals(liderAnterior)) {
                 if (liderAnterior != null && !liderAnterior.isEmpty()) {
                     quitarTag(liderAnterior, coronas.getString(board + ".tag-id"));
-                    anunciarCambio(board, nuevoLider,
+                    anunciarCambio(board, nuevoLider, liderAnterior, coronas);
+                }
+                darTag(nuevoLider, coronas.getString(board + ".tag-id"), coronas.getString(board + ".tag"));
+                lideresActuales.put(board, nuevoLider);
+                guardarDatos();
+            }
+        }
+    }
+
+    private void darTag(String jugador, String tagId, String tagTexto) {
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "at create " + tagId + " " + tagTexto);
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "at set " + jugador + " " + tagId);
+    }
+
+    private void quitarTag(String jugador, String tagId) {
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "at clear " + jugador);
+    }
+
+    private void anunciarCambio(String board, String nuevo, String anterior, ConfigurationSection coronas) {
+        String nombreCorona = coronas.getString(board + ".nombre", board);
+        String emoji = coronas.getString(board + ".emoji", "👑");
+        String color = coronas.getString(board + ".color", "&6");
+        String mensaje = plugin.getConfig().getString("anuncio", "")
+            .replace("%nuevo%", nuevo)
+            .replace("%anterior%", anterior)
+            .replace("%corona%", color + emoji + " " + nombreCorona + "&r");
+
+        mensaje = mensaje.replace("&", "§").replaceAll("&#([0-9A-Fa-f]{6})", "");
+
+        for (String linea : mensaje.split("\n")) {
+            Bukkit.broadcastMessage(linea);
+        }
+
+        String sonidoNombre = plugin.getConfig().getString("sonido", "ENTITY_ENDER_DRAGON_GROWL");
+        try {
+            Sound sonido = Sound.valueOf(sonidoNombre);
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                p.playSound(p.getLocation(), sonido, 1.0f, 1.0f);
+            }
+        } catch (Exception ignored) {}
+    }
+
+    private void darRecompensasDiarias() {
+        ConfigurationSection coronas = plugin.getConfig().getConfigurationSection("coronas");
+        if (coronas == null) return;
+
+        for (String board : coronas.getKeys(false)) {
+            String lider = lideresActuales.get(board);
+            if (lider == null || lider.isEmpty()) continue;
+
+            int recompensa = coronas.getInt(board + ".recompensa-diaria", 500);
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "eco give " + lider + " " + recompensa);
+
+            Player p = Bukkit.getPlayerExact(lider);
+            if (p != null) {
+                String nombreCorona = coronas.getString(board + ".nombre", board);
+                String color = coronas.getString(board + ".color", "&6");
+                p.sendMessage("§6✦ §fRecibiste §a" + recompensa + " ArCoins §fpor mantener la "
+                    + color.replace("&", "§") + nombreCorona + "§f!");
+            }
+        }
+    }
+
+    public void mostrarStatus(CommandSender sender) {
+        sender.sendMessage("§6=== Coronas Actuales ===");
+        if (lideresActuales.isEmpty()) {
+            sender.sendMessage("§7Ninguna corona asignada aún.");
+            return;
+        }
+        for (Map.Entry<String, String> entry : lideresActuales.entrySet()) {
+            sender.sendMessage("§e" + entry.getKey() + " §7→ §f" + entry.getValue());
+        }
+    }
+
+    public void recargar() {
+        if (tarea != null) tarea.cancel();
+        if (tareaRecompensa != null) tareaRecompensa.cancel();
+        iniciar();
+    }
+
+    public void guardarDatos() {
+        try {
+            plugin.getDataFolder().mkdirs();
+            Properties props = new Properties();
+            props.putAll(lideresActuales);
+            try (FileOutputStream fos = new FileOutputStream(archivoData)) {
+                props.store(fos, "ArcanisCoronas - lideres actuales");
+            }
+        } catch (Exception e) {
+            plugin.getLogger().warning("Error guardando datos: " + e.getMessage());
+        }
+    }
+
+    private void cargarDatos() {
+        if (!archivoData.exists()) return;
+        try (FileInputStream fis = new FileInputStream(archivoData)) {
+            Properties props = new Properties();
+            props.load(fis);
+            for (String key : props.stringPropertyNames()) {
+                lideresActuales.put(key, props.getProperty(key));
+            }
+        } catch (Exception e) {
+            plugin.getLogger().warning("Error cargando datos: " + e.getMessage());
+        }
+    }
+}
