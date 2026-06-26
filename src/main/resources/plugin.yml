@@ -1,0 +1,14 @@
+name: ArcanisCoronas
+version: 1.0
+main: net.arcanis.coronas.ArcanisCoronas
+api-version: '1.21'
+authors: [Arcanis]
+description: Sistema de Coronas para Arcanis
+depend: [PlaceholderAPI]
+softdepend: [Essentials]
+
+commands:
+  coronas:
+    description: Comandos del sistema de coronas
+    usage: /coronas
+    permission: arcanis.coronas.admin
