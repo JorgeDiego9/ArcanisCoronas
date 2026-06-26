@@ -1,0 +1,72 @@
+# Sistema de Coronas - Arcanis
+# Cada cuántos segundos revisar los tops (60 = 1 minuto)
+check-interval: 60
+
+coronas:
+  vault_eco_balance:
+    nombre: "Corona de Riqueza"
+    emoji: "💰"
+    color: "&#46FF64"
+    tag: "[&6👑 Rico&r]"
+    tag-id: "corona_rico"
+    recompensa-diaria: 500
+
+  statistic_MINE_BLOCK:
+    nombre: "Corona Minera"
+    emoji: "⛏"
+    color: "&#FFD700"
+    tag: "[&e👑 Minero&r]"
+    tag-id: "corona_minero"
+    recompensa-diaria: 500
+
+  statistic_player_kills:
+    nombre: "Corona Asesina"
+    emoji: "⚔"
+    color: "&#FF0000"
+    tag: "[&c👑 Asesino&r]"
+    tag-id: "corona_asesino"
+    recompensa-diaria: 500
+
+  statistic_mob_kills:
+    nombre: "Corona Cazadora"
+    emoji: "🗡"
+    color: "&#FF4444"
+    tag: "[&4👑 Cazador&r]"
+    tag-id: "corona_cazador"
+    recompensa-diaria: 500
+
+  statistic_fish_caught:
+    nombre: "Corona Pescadora"
+    emoji: "🎣"
+    color: "&#00BFFF"
+    tag: "[&b👑 Pescador&r]"
+    tag-id: "corona_pescador"
+    recompensa-diaria: 500
+
+  statistic_time_played:
+    nombre: "Corona Viciada"
+    emoji: "⏰"
+    color: "&#9B59B6"
+    tag: "[&5👑 Viciado&r]"
+    tag-id: "corona_viciado"
+    recompensa-diaria: 500
+
+  odailyquests_total:
+    nombre: "Corona Desafiante"
+    emoji: "✦"
+    color: "&#D946EF"
+    tag: "[&d👑 Desafiante&r]"
+    tag-id: "corona_desafiante"
+    recompensa-diaria: 500
+
+  chatgames_total:
+    nombre: "Corona del Chat"
+    emoji: "🎮"
+    color: "&#F59E0B"
+    tag: "[&6👑 Gamer&r]"
+    tag-id: "corona_gamer"
+    recompensa-diaria: 500
+
+anuncio: "&r\n&#FFD700&l✦ ¡CAMBIO DE CORONA! ✦\n&f%nuevo% &7le arrebató la &6%corona%&7 a &f%anterior%&7!\n&#FFD700&l✦&r"
+
+sonido: "ENTITY_ENDER_DRAGON_GROWL"
