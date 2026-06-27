@@ -71,13 +71,12 @@ public class CoronaManager {
         }
     }
 
-    private void darTag(String jugador, String tagId, String tagTexto) {
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "at create " + tagId + " " + tagTexto);
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "at set " + jugador + " " + tagId);
+private void darTag(String jugador, String tagId, String tagTexto) {
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "alonsotags set " + jugador + " " + tagId + " &f");
     }
 
     private void quitarTag(String jugador, String tagId) {
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "at clear " + jugador);
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "alonsotags set " + jugador + " null &f");
     }
 
     private void anunciarCambio(String board, String nuevo, String anterior, ConfigurationSection coronas) {
