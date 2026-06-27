@@ -40,7 +40,6 @@ public class CoronaManager {
         if (jugadorOnline == null) return;
 
         for (String board : coronas.getKeys(false)) {
-            // Si tiene placeholder-custom, usarlo; si no, construir el de ajlb
             String placeholder;
             String customPlaceholder = coronas.getString(board + ".placeholder-custom");
             if (customPlaceholder != null && !customPlaceholder.isEmpty()) {
@@ -67,11 +66,14 @@ public class CoronaManager {
                 darTag(nuevoLider, coronas.getString(board + ".tag-id"), coronas.getString(board + ".tag"));
                 lideresActuales.put(board, nuevoLider);
                 guardarDatos();
+            } else {
+                // Líder no cambió pero aseguramos que tenga el tag
+                darTag(nuevoLider, coronas.getString(board + ".tag-id"), coronas.getString(board + ".tag"));
             }
         }
     }
 
-private void darTag(String jugador, String tagId, String tagTexto) {
+    private void darTag(String jugador, String tagId, String tagTexto) {
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "alonsotags set " + jugador + " " + tagId + " &f");
     }
 
