@@ -60,25 +60,39 @@ public class CoronaManager {
 
             if (!nuevoLider.equals(liderAnterior)) {
                 if (liderAnterior != null && !liderAnterior.isEmpty()) {
-                    quitarTag(liderAnterior, coronas.getString(board + ".tag-id"));
+                    quitarPermiso(liderAnterior, coronas.getString(board + ".tag-id"));
                     anunciarCambio(board, nuevoLider, liderAnterior, coronas);
                 }
-                darTag(nuevoLider, coronas.getString(board + ".tag-id"), coronas.getString(board + ".tag"));
+                darPermiso(nuevoLider, coronas.getString(board + ".tag-id"), board, coronas);
                 lideresActuales.put(board, nuevoLider);
                 guardarDatos();
-            } else {
-                // Líder no cambió pero aseguramos que tenga el tag
-                darTag(nuevoLider, coronas.getString(board + ".tag-id"), coronas.getString(board + ".tag"));
             }
         }
     }
 
-    private void darTag(String jugador, String tagId, String tagTexto) {
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "alonsotags set " + jugador + " " + tagId + " &f");
+    private void darPermiso(String jugador, String tagId, String board, ConfigurationSection coronas) {
+        // Dar permiso del tag en LuckPerms
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+            "lp user " + jugador + " permission set arcanis.corona." + tagId + " true");
+
+        // Notificar al jugador si está online
+        Player p = Bukkit.getPlayerExact(jugador);
+        if (p != null) {
+            String nombreCorona = coronas.getString(board + ".nombre", board);
+            String emoji = coronas.getString(board + ".emoji", "👑");
+            String color = coronas.getString(board + ".color", "&6");
+            p.sendMessage("§6✦ §f¡Desbloqueaste la " + color.replace("&", "§") + emoji + " " + nombreCorona + "§f!");
+            p.sendMessage("§7Úsala con §e/tag §7o §e/alonsotags§7.");
+        }
     }
 
-    private void quitarTag(String jugador, String tagId) {
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "alonsotags set " + jugador + " null &f");
+    private void quitarPermiso(String jugador, String tagId) {
+        // Quitar permiso del tag en LuckPerms
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+            "lp user " + jugador + " permission unset arcanis.corona." + tagId);
+        // Si tenía el tag puesto, quitárselo
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+            "alonsotags set " + jugador + " null &f");
     }
 
     private void anunciarCambio(String board, String nuevo, String anterior, ConfigurationSection coronas) {
